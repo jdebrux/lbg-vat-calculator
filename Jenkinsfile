@@ -14,21 +14,15 @@ pipeline {
                     git branch: 'main', url: 'https://github.com/jdebrux/lbg-vat-calculator'
                 }
             }
-            stage('Compile') {
-                steps {
-                    // Run Maven on a Unix agent.
-                    sh "mvn clean compile"
+            stage('SonarQube Analysis') {
+                environment {
+                    scannerHome = tool 'sonarqube'
+                }
+                    steps {
+                            withSonarQubeEnv('sonar-qube-1') {
+                                    sh "${scannerHome}/bin/sonar-scanner"
+                            }
+                    }
                 }
             }
-            stage('Test') {
-                steps {
-                    sh "mvn test"
-                }
-            }
-            stage('Package') {
-                steps {
-                    sh "mvn -Dmaven.test.skip package"
-                }
-            }
-        }
 }
